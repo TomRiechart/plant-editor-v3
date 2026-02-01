@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌿 Plant Editor - AI Plant Replacement</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">🌿 Plant Editor</div>
+      <div class="subtitle">AI-powered plant replacement - perfectly preserving your pots</div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Step 0: Choose Mode -->
+      <section class="step" id="step-choose">
+        <div class="step-header">
+          <h2>How would you like to start?</h2>
+          <p class="step-desc">Choose an existing collection or upload your own image</p>
+        </div>
+        <div class="choose-mode">
+          <div class="mode-card" id="mode-collections">
+            <div class="mode-icon">📚</div>
+            <h3>EasyPlant Collections</h3>
+            <p>Browse and edit existing plant collections</p>
+          </div>
+          <div class="mode-card" id="mode-upload">
+            <div class="mode-icon">📁</div>
+            <h3>Upload Image</h3>
+            <p>Upload your own photo to edit</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 0b: Collections Browser -->
+      <section class="step" id="step-collections" hidden>
+        <div class="step-header">
+          <button class="btn btn-outline btn-small" id="back-to-choose">← Back</button>
+          <h2>Select a Collection</h2>
+          <p class="step-desc">Choose a collection to edit</p>
+          <button class="btn btn-secondary btn-small" id="edit-collections-btn" style="margin-left: auto;">⚙️ Edit Collections</button>
+        </div>
+        <div class="collections-grid" id="collections-grid">
+          <!-- Collections loaded dynamically -->
+        </div>
+      </section>
+
+      <!-- Collection Editor Modal -->
+      <div class="modal" id="collection-editor-modal" hidden>
+        <div class="modal-content modal-large">
+          <div class="modal-header">
+            <h3>📚 Edit Collections</h3>
+            <button class="close-btn" id="close-collection-editor">✕</button>
+          </div>
+          <div class="collection-editor-content">
+            <div class="collection-list" id="editor-collection-list">
+              <!-- Collection names list -->
+            </div>
+            <div class="collection-images-editor" id="editor-images-panel">
+              <p class="editor-hint">← Select a collection to edit</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" id="save-collection-order">💾 Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1: Upload -->
+      <section class="step" id="step-upload" hidden>
+        <div class="step-header">
+          <button class="btn btn-outline btn-small" id="back-to-choose-upload">← Back</button>
+          <span class="step-number">1</span>
+          <h2>Upload Collection Image</h2>
+          <p class="step-desc">Upload a photo with plants in pots that you want to edit</p>
+        </div>
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-icon">📁</div>
+          <p>Drag image here or <span class="upload-link">click to browse</span></p>
+          <input type="file" id="file-input" accept="image/*" hidden>
+        </div>
+        <div class="uploaded-preview" id="uploaded-preview" hidden>
+          <img id="preview-image" alt="Preview">
+          <button class="btn btn-secondary" id="change-image">Change Image</button>
+        </div>
+      </section>
+
+      <!-- Step 2: Mark Plants -->
+      <section class="step" id="step-mark" hidden>
+        <div class="step-header">
+          <span class="step-number">2</span>
+          <h2>Mark Plants to Replace</h2>
+          <p class="step-desc">Click on each plant you want to replace, then select the new plant from the library</p>
+        </div>
+        <div class="mark-container">
+          <div class="canvas-wrapper">
+            <canvas id="mark-canvas"></canvas>
+            <div class="canvas-instructions">Click on the center of each plant to mark it</div>
+          </div>
+          <div class="marks-list">
+            <h3>Plants to edit:</h3>
+            <div id="marks-container">
+              <div class="empty-state">
+                <div class="icon">👆</div>
+                <p>Click on plants in the image to add them</p>
+              </div>
+            </div>
+            <button class="btn btn-outline" id="clear-marks" style="margin-top: 12px;">🗑️ Clear All</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 3: Settings & Prompt -->
+      <section class="step" id="step-settings" hidden>
+        <div class="step-header">
+          <span class="step-number">3</span>
+          <h2>AI Prompt Settings</h2>
+          <p class="step-desc">Customize the prompt sent to the AI (advanced users)</p>
+        </div>
+        <div class="prompt-editor">
+          <div class="prompt-header">
+            <label>Base Prompt Template:</label>
+            <button class="btn btn-outline btn-small" id="reset-prompt">↺ Reset to Default</button>
+          </div>
+          <textarea id="custom-prompt" rows="8" placeholder="Loading default prompt..."></textarea>
+          <div class="prompt-help">
+            <strong>Variables:</strong> 
+            <code>{{PLANT_NAME}}</code> = replacement plant name, 
+            <code>{{POT_COLOR}}</code> = pot color from mark settings
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 4: Run -->
+      <section class="step" id="step-run" hidden>
+        <div class="step-header">
+          <span class="step-number">4</span>
+          <h2>Generate Variations</h2>
+          <p class="step-desc">3 versions per edit, up to 10 retries if pot verification fails</p>
+        </div>
+        <div class="run-buttons">
+          <button class="btn btn-primary btn-large" id="run-btn">
+            🚀 Start Plant Replacement
+          </button>
+          <button class="btn btn-danger btn-large" id="stop-btn" hidden>
+            🛑 STOP
+          </button>
+        </div>
+        
+        <div class="progress-container" id="progress-container" hidden>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="progress-text" id="progress-text">Starting...</div>
+          <div class="logs" id="logs"></div>
+        </div>
+      </section>
+
+      <!-- Step 5: Results -->
+      <section class="step" id="step-results" hidden>
+        <div class="step-header">
+          <span class="step-number">5</span>
+          <h2>Results - Compare Versions</h2>
+          <p class="step-desc">Compare the generated versions and use the slider to see before/after</p>
+        </div>
+        
+        <!-- Version Cards -->
+        <div class="results-grid" id="results-grid"></div>
+        
+        <!-- Comparison Section -->
+        <div class="comparison-section" id="comparison-section">
+          <h3>🔍 Before / After Comparison</h3>
+          <div class="comparison-grid" id="comparison-grid"></div>
+        </div>
+        
+        <div class="results-actions" style="margin-top: 32px;">
+          <button class="btn btn-primary" id="download-all">📥 Download All</button>
+          <button class="btn btn-secondary" id="start-over">🔄 Start Over</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Plant Library Sidebar -->
+    <aside class="sidebar" id="plant-library">
+      <div class="sidebar-header">
+        <h3>🌱 Plant Library</h3>
+        <button class="close-btn" id="close-library">✕</button>
+      </div>
+      <div class="plant-search">
+        <input type="text" placeholder="Search plants..." id="plant-search">
+      </div>
+      <div class="plants-grid" id="plants-grid"></div>
+    </aside>
+  </div>
+
+  <!-- Mark Edit Modal -->
+  <div class="modal" id="mark-modal" hidden>
+    <div class="modal-content">
+      <h3>🌿 Select Replacement Plant</h3>
+      <div class="form-group">
+        <label>Current plant name (optional):</label>
+        <input type="text" id="mark-original" placeholder="e.g., Money Tree">
+      </div>
+      <div class="form-group">
+        <label>Replace with:</label>
+        <div class="replacement-select">
+          <button class="btn btn-outline" id="select-replacement">📚 Open Plant Library</button>
+          <span id="selected-replacement">Not selected</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Pot color (helps AI preserve it):</label>
+        <input type="text" id="mark-pot-color" placeholder="e.g., white, terracotta, gray">
+      </div>
+      <div class="form-group">
+        <label>Mask size: <span id="mark-size-value">80px</span></label>
+        <input type="range" id="mark-size" min="30" max="250" value="80">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancel-mark">Cancel</button>
+        <button class="btn btn-primary" id="save-mark">Save Plant</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
