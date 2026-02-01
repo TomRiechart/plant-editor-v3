@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: plant-editor-v1
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: node server/index.js
+    healthCheckPath: /api/plants
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: FAL_API_KEY
+        sync: false

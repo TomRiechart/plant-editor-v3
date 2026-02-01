@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+.next/
+out/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+# data/uploads/  # Commented to track EasyPlant images
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+coverage/
+.nyc_output/
+
+# Temp
+tmp/
+temp/
+*.tmp
+
+data/uploads/results/
